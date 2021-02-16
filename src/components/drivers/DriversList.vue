@@ -3,14 +3,14 @@
         <b-row>
             <!-- CREATION BUTTON -->
             <b-col>
-                <b-button class="btn-info float-right my-4" v-b-modal.route-create-update>Nueva ruta</b-button>
+                <b-button class="btn-info float-right my-4" v-b-modal.driver-create>Nuevo conductor</b-button>
             </b-col>
         </b-row>
         <!-- MESSAGE -->
-        <b-alert :show="alert" dismissible :variant="variantalert">{{message}}</b-alert>
+        <b-alert :show="alert" fade dismissible :variant="variantalert">{{message}}</b-alert>
         <!-- INIT TABLE -->
         <b-table
-            :items="routes"
+            :items="drivers"
             :fields="fields"
             :current-page="currentPage"
             :per-page="perPage"
@@ -20,12 +20,8 @@
         >
             <!-- ACTIONS INSIDE ITEMS -->
             <template #cell(actions)="row">
-                <!-- EDIT BUTTON -->
-                <b-button size="sm" @click.prevent="editModalRoute(row.item)" class="btn-info mr-1">
-                    Editar
-                </b-button>
                 <!-- DELETE BUTTON -->
-                <b-button size="sm" @click.prevent="deleteModalRoute(row.item)" class="btn-danger mr-1">
+                <b-button size="sm" @click.prevent="deleteModalDriver(row.item)" class="btn-danger mr-1">
                     Eliminar
                 </b-button>
             </template>
@@ -77,61 +73,63 @@
             <!-- END TABLE PAGINATION -->
         </b-row>
 
-        <!-- INIT MODAL CREATE/UPDATE -->
+        <!-- INIT MODAL CREATE -->
         <b-modal
-            id="route-create-update"
+            id="driver-create"
             ref="modal"
-            :title="titleCreateUpdateRoute"
+            :title="titleCreateDriver"
             @show="resetCreateModal"
             @hidden="resetCreateModal"
             hide-footer
         >
-            <b-form @submit.prevent="createRoute">
-                <!-- INPUT FIELD NAME -->
-                <b-form-group id="in-group-name" label="Nombre:" label-for="input-name">
+            <b-form @submit.prevent="createDriver">
+                <!-- INPUT FIELD USERNAME -->
+                <b-form-group id="in-group-username" label="Nombre de Usuario:" label-for="input-username">
                     <b-form-input
-                        id="input-name"
-                        v-model="form.name"
-                        placeholder="Nombre Ruta"
+                        id="input-username"
+                        v-model="form.username"
+                        placeholder="Nombre de usuario del Conductor"
                         required
                     ></b-form-input>
                 </b-form-group>
-                <!-- INPUT FIELD ORIGIN -->
-                <b-form-group id="in-group-origin" label="Origen:" label-for="input-origin">
+                <!-- INPUT FIELD PASSWORD -->
+                <b-form-group id="in-group-password" label="Contraseña:" label-for="input-password">
                     <b-form-input
-                        id="input-origin"
-                        v-model="form.origin"
-                        placeholder="Origen"
+                        id="input-password"
+                        v-model="form.password"
+                        placeholder="Contraseña"
+                        type="password"
                         required
                     ></b-form-input>
                 </b-form-group>
-                <!-- INPUT FIELD DESTINATION -->
-                <b-form-group id="in-group-destination" label="Destino:" label-for="input-destination">
+                <!-- INPUT FIELD PASSWORD CONFIRM -->
+                <b-form-group id="in-group-password-confirm" label="Confirmar Contraseña:" label-for="input-password-confirm">
                     <b-form-input
-                        id="input-destination"
-                        v-model="form.destination"
-                        placeholder="Destino"
+                        id="input-password-confirm"
+                        v-model="form.password_confirm"
+                        placeholder="Confirmar Contraseña"
+                        type="password"
                         required
                     ></b-form-input>
                 </b-form-group>
 
                 <!-- FORM ACTIONS BUTTONS -->
-                <b-button class="mr-2 float-right" type="submit" variant="primary">{{ routeToUpdate ? 'Editar ruta' : 'Crear ruta' }}</b-button>
-                <b-button class="mr-2 float-right" variant="danger" @click="closeModal('route-create-update')">Cerrar</b-button>
+                <b-button class="mr-2 float-right" type="submit" variant="primary">Crear conductor</b-button>
+                <b-button class="mr-2 float-right" variant="danger" @click="closeModal('driver-create')">Cerrar</b-button>
             </b-form>
         </b-modal>
-        <!-- END MODAL CREATE/UPDATE -->
+        <!-- END MODAL CREATE -->
 
         <!-- INIT MODAL DELETE -->
         <b-modal
-            id="route-delete"
+            id="driver-delete"
             ref="modal"
-            title="Borrar Ruta"
+            title="Borrar Conductor"
             ok-title="Borrar"
             header-close-label="Cerrar"
-            @ok="deleteRoute"
+            @ok="deleteDriver"
         >
-            <p>Esta seguro que desea borrar la ruta: {{routeToDelete ? routeToDelete.name : ''}}</p>
+            <p>Esta seguro que desea borrar el conductor: {{driverToDelete ? driverToDelete.name : ''}}</p>
         </b-modal>
         <!-- END MODAL DELETE -->
     </b-container>
@@ -141,20 +139,18 @@
     import axios from "axios";
 
     export default {
-        name: 'RoutesList',
+        name: 'DriversList',
         data() {
             return {
                 loading: false,
                 alert: false,
                 variantalert: 'danger',
                 message: '',
-                titleCreateUpdateRoute:'Crear Ruta',
+                titleCreateDriver:'Crear Conductor',
 
-                routes: [],
+                drivers: [],
                 fields: [
-                    { key: 'name', label: 'Nombre'},
-                    { key: 'origin', label: 'Origen'},
-                    { key: 'destination', label: 'Destino' },
+                    { key: 'username', label: 'Nombre'},
                     { key: 'actions', label: ''}
                 ],
                 totalRows: 0,
@@ -163,111 +159,98 @@
                 pageOptions: [5, 10, 15],
 
                 form: {
-                    name: '',
-                    origin: '',
-                    destination: ''
+                    username: '',
+                    password: '',
+                    password_confirm: ''
                 },
 
-                routeToDelete: null,
-                routeToUpdate: null
+                driverToDelete: null
             }
         },
         created() {
-            this.getRoutes();
+            this.getDrivers();
         },
         methods: {
-            async getRoutes(){
+            async getDrivers(){
+                this.alert = false;
                 try {
                     this.loading = true;
-                    const response = await axios.get("trip/routes/");
+                    const response = await axios.get("user/drivers/");
                     this.totalRows = response.data.length
-                    this.routes = response.data;
+                    this.drivers = response.data;
                 } catch (error) {
                     this.alert = true;
-                    this.message = 'Error al cargar el listado de rutas.';
+                    this.message = 'Error al cargar el listado de conductores.';
                     this.variantalert = 'danger';
                 } finally {
                     this.loading = false;
                 }
             },
-            editModalRoute(route){
-                this.$bvModal.show('route-create-update');
-                this.routeToUpdate = route;
-                this.titleCreateUpdateRoute = 'Editar Ruta';
-
-                this.form = {
-                    name: route.name,
-                    origin: route.origin,
-                    destination: route.destination
-                }
+            deleteModalDriver(driver){
+                this.$bvModal.show('driver-delete');
+                this.driverToDelete = driver;
             },
-            deleteModalRoute(route){
-                this.$bvModal.show('route-delete');
-                this.routeToDelete = route;
-            },
-            async deleteRoute(){
+            async deleteDriver(){
+                this.alert = false;
                 try {
                     this.loading = true;
-                    await axios.delete("trip/routes/"+this.routeToDelete.id);
+                    await axios.delete("user/drivers/"+this.driverToDelete.id);
                     this.alert = true;
-                    this.message = 'Ruta eliminada correctamente.';
+                    this.message = 'Conductor eliminado correctamente.';
                     this.variantalert = 'success';
 
-                    this.getRoutes();
-                    this.closeModal('route-delete');
+                    this.getDrivers();
+                    this.closeModal('driver-delete');
                 } catch (error) {
                     this.alert = true;
-                    this.message = 'Error al borrar la ruta.';
+                    this.message = 'Error al borrar el conductor.';
                     this.variantalert = 'danger';
                 } finally {
                     this.loading = false;
                 }
             },
-            async createRoute(){
+            async createDriver(){
+                this.alert = false;
                 try {
                     this.loading = true;
                     const data = {
-                        'name': this.form.name, 
-                        'origin': this.form.origin,
-                        'destination': this.form.destination
+                        'username': this.form.username, 
+                        'password': this.form.password,
+                        'password_confirm': this.form.password_confirm
                     }
 
-                    if(this.routeToUpdate && this.routeToUpdate.id ){
-                        await axios.put("trip/routes/"+this.routeToUpdate.id+"/", data);
-                        this.message = 'Ruta editada correctamente.';
-                    }else{
-                        await axios.post("trip/routes/", data);
-                        this.message = 'Ruta creada correctamente.';
-                    }
+                    await axios.post("user/drivers/", data);
 
+                    this.message = 'Conductor creado correctamente.';
                     this.alert = true;
                     this.variantalert = 'success';
-                    
+
                     this.resetCreateModal();
-                    this.getRoutes();
-                    this.closeModal('route-create-update');
+                    this.getDrivers();
+                    this.closeModal('driver-create');
                 } catch (error) {
                     this.resetCreateModal();
                     this.alert = true;
-                    if(this.routeToUpdate && this.routeToUpdate.id ){
-                        this.message = 'Error al editar la ruta.';
-                    }else{
-                        this.message = 'Error al crear la ruta.';
-                    }
                     this.variantalert = 'danger';
+
+                    if(error.response && error.response.data && error.response.data.non_field_errors
+                        && error.response.data.non_field_errors[0]){
+                        this.message = error.response.data.non_field_errors[0];
+                    }else{
+                        this.message = 'Error al crear el conductor.';
+                    }
                 } finally {
                     this.loading = false;
                 }
             },
             resetCreateModal(){
                 this.form = {
-                    name: '',
-                    origin: '',
-                    destination: ''
+                    username: '',
+                    password: '',
+                    password_confirm: ''
                 }
             },
             closeModal(name) {
-                this.titleCreateUpdateRoute = 'Crear Ruta';
                 this.$bvModal.hide(name);
             }
         }

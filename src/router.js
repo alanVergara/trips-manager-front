@@ -4,6 +4,7 @@ import VueRouter from "vue-router"
 import Main from "./components/trips/Main"
 import TripsList from "./components/trips/TripsList"
 import RoutesList from "./components/routes/RoutesList"
+import DriversList from "./components/drivers/DriversList"
 
 import Login from "./components/users/Login"
 import Register from './components/users/Register'
@@ -25,6 +26,11 @@ const routes = [
         path:"/register",
         name:"register",
         component:Register
+    },
+    {
+        path:"/drivers",
+        name:"drivers",
+        component:DriversList
     },
     {
         path:"/trips",

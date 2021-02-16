@@ -194,7 +194,7 @@
                 },
                 min: minDate,
                 alert: false,
-                variantalert: 'error',
+                variantalert: 'danger',
                 message: '',
                 titleCreateUpdateTrip:'Crear Viaje',
                 tripToDelete: null,
@@ -215,7 +215,7 @@
                 } catch (error) {
                     this.alert = true;
                     this.message = 'Error al cargar el listado de viajes.';
-                    this.variantalert = 'error';
+                    this.variantalert = 'danger';
                 } finally {
                     this.loading = false;
                 }
@@ -251,7 +251,7 @@
                 } catch (error) {
                     this.alert = true;
                     this.message = 'Error al borrar el viaje.';
-                    this.variantalert = 'error';
+                    this.variantalert = 'danger';
                 }
             },
             async createTrip(){
@@ -288,7 +288,7 @@
                     }else{
                         this.message = 'Error al crear el viaje.';
                     }
-                    this.variantalert = 'error';
+                    this.variantalert = 'danger';
                 }
             },
             async getRoutes(){
@@ -299,7 +299,7 @@
                 } catch (error) {
                     this.alert = true;
                     this.message = 'Error al obtener rutas para creación de viaje.';
-                    this.variantalert = 'error';
+                    this.variantalert = 'danger';
                 } finally {
                     this.loading = false;
                 }
@@ -312,7 +312,7 @@
                 } catch (error) {
                     this.alert = true;
                     this.message = 'Error al obtener buses para creación de viaje.';
-                    this.variantalert = 'error';
+                    this.variantalert = 'danger';
                 } finally {
                     this.loading = false;
                 }
