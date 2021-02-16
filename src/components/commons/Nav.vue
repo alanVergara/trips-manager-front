@@ -2,6 +2,12 @@
     <nav class="navbar navbar-expand navbar-light fixed-top">
         <div class="container">
             <router-link to="/" class="navbar-brand">Home</router-link>
+            <b-row>
+                <router-link to="/routes" class="nav-link">Rutas</router-link>
+                <router-link to="/trips" class="nav-link">Viajes</router-link>
+                <router-link to="/trips" class="nav-link">Choferes</router-link>
+                <router-link to="/trips" class="nav-link">Buses</router-link>
+            </b-row>
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav ml-auto" v-if="!user">
                     <li class="nav-item">

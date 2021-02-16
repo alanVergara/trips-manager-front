@@ -1,5 +1,5 @@
 <template>
-    <b-container fluid>
+    <b-container>
         <b-row>
             <b-col>
                 <b-button class="btn-info float-right my-4" v-b-modal.trip-create>Nuevo viaje</b-button>
