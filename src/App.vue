@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <Nav/>
-    <Menu/>
+    <!-- <Menu/> -->
     <v-main class="ml-14 mt-14">
       <router-view/>
     </v-main>
@@ -10,13 +10,13 @@
 
 <script>
   import Nav from './components/commons/Nav.vue';
-  import Menu from './components/commons/Menu.vue'
+//   import Menu from './components/commons/Menu.vue'
 
   export default {
     name: "App",
     components: {
       Nav,
-      Menu
+    //   Menu
     }
   };
 </script>
