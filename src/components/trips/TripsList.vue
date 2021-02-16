@@ -17,10 +17,10 @@
             small
         >
             <template #cell(actions)="row">
-                <b-button size="sm" @click.prevent="editTrip(row.item)" class="btn-info mr-1">
+                <b-button size="sm" @click.prevent="editModalTrip(row.item)" class="btn-info mr-1">
                     Editar
                 </b-button>
-                <b-button size="sm" @click.prevent="deleteTrip(row.item)" class="btn-danger mr-1">
+                <b-button size="sm" @click.prevent="deleteModalTrip(row.item)" class="btn-danger mr-1">
                     Eliminar
                 </b-button>
             </template>
@@ -71,11 +71,11 @@
             <!-- END TABLE PAGINATION -->
         </b-row>
 
-        <!-- Creation modal -->
+        <!-- INIT MODAL CREATE/UPDATE -->
         <b-modal
             id="trip-create"
             ref="modal"
-            title="Crear viaje"
+            :title="titleCreateUpdateTrip"
             @show="resetCreateModal"
             @hidden="resetCreateModal"
             hide-footer
@@ -140,21 +140,24 @@
                     ></b-form-select>
                 </b-form-group>
 
-                <b-button class="mr-2 float-right" type="submit" variant="primary">Crear viaje</b-button>
+                <b-button class="mr-2 float-right" type="submit" variant="primary">{{ tripToUpdate ? 'Editar viaje' : 'Crear viaje' }}</b-button>
                 <b-button class="mr-2 float-right" variant="danger" @click="closeModal('trip-create')">Cerrar</b-button>
             </b-form>
         </b-modal>
+        <!-- END MODAL CREATE/UPDATE -->
 
+        <!-- INIT MODAL DELETE -->
         <b-modal
             id="trip-delete"
             ref="modal"
             title="Borrar Viaje"
-            hide-footer
+            ok-title="Borrar"
+            header-close-label="Cerrar"
+            @ok="deleteTrip"
         >
-            <p>Esta seguro que desea borrar el viaje {{nameTripToDelete}}</p>
-            <b-button class="mr-2 float-right" variant="primary"  @click="closeModal('trip-delete')">Borrar</b-button>
-            <b-button class="mr-2 float-right" variant="danger" @click="closeModal('trip-delete')">Cerrar</b-button>
+            <p>Esta seguro que desea borrar el viaje {{tripToDelete ? tripToDelete.name : ''}}</p>
         </b-modal>
+        <!-- END MODAL DELETE -->
     </b-container>
 </template>
 
@@ -182,11 +185,6 @@
                 currentPage: 1,
                 perPage: 5,
                 pageOptions: [5, 10, 15],
-                infoModal: {
-                    id: 'info-modal',
-                    title: '',
-                    content: ''
-                },
                 form: {
                     name: '',
                     begin_at_date: '',
@@ -198,7 +196,9 @@
                 alert: false,
                 variantalert: 'error',
                 message: '',
-                nameTripToDelete: ''
+                titleCreateUpdateTrip:'Crear Viaje',
+                tripToDelete: null,
+                tripToUpdate: null
             }
         },
         created() {
@@ -212,8 +212,6 @@
                     this.loading = true;
                     const response = await axios.get("trip/trips/");
                     this.trips = response.data;
-
-                    console.log(response)
                 } catch (error) {
                     this.alert = true;
                     this.message = 'Error al cargar el listado de viajes.';
@@ -222,15 +220,39 @@
                     this.loading = false;
                 }
             },
-            editTrip(trip){
-                console.log("editando viaje");
-                console.log(trip);
+            editModalTrip(trip){
+                this.$bvModal.show('trip-create');
+                this.tripToUpdate = trip;
+                this.titleCreateUpdateTrip = 'Editar Viaje';
+                let datetime = trip.begin_at.split('T');
+
+                this.form = {
+                    name: trip.name,
+                    begin_at_date: datetime[0],
+                    begin_at_time: datetime[1].replace('Z',''),
+                    route: trip.route,
+                    bus: trip.bus
+                }
             },
-            deleteTrip(trip){
+            deleteModalTrip(trip){
                 this.$bvModal.show('trip-delete');
-                this.nameTripToDelete = trip.name;
-                console.log("eliminando viaje");
-                console.log(trip);
+                this.tripToDelete = trip;
+            },
+            async deleteTrip(){
+                try {
+                    this.loading = true;
+                    await axios.delete("trip/trips/"+this.tripToDelete.id);
+                    this.alert = true;
+                    this.message = 'Viaje eliminado correctamente.';
+                    this.variantalert = 'success';
+
+                    this.getTrips();
+                    this.closeModal('trip-delete');
+                } catch (error) {
+                    this.alert = true;
+                    this.message = 'Error al borrar el viaje.';
+                    this.variantalert = 'error';
+                }
             },
             async createTrip(){
                 try {
@@ -239,22 +261,33 @@
                     }
                     const data = {
                         'name': this.form.name, 
-                        'begin_at': this.form.begin_at_date +'T'+ this.form.begin_at_time, //'2021-02-16T04:02'  2021-02-16T01:04:00
+                        'begin_at': this.form.begin_at_date +'T'+ this.form.begin_at_time,
                         'route': this.form.route, 
                         'bus': this.form.bus
                     }
                     this.loading = true;
-                    await axios.post("trip/trips/", data);
+                    if(this.tripToUpdate && this.tripToUpdate.id ){
+                        await axios.put("trip/trips/"+this.tripToUpdate.id+"/", data);
+                        this.message = 'Viaje editado correctamente.';
+                    }else{
+                        await axios.post("trip/trips/", data);
+                        this.message = 'Viaje creado correctamente.';
+                    }
 
                     this.alert = true;
-                    this.message = 'Viaje creado correctamente.';
                     this.variantalert = 'success';
                     
+                    this.resetCreateModal();
                     this.getTrips();
-                    this.closeModal()
+                    this.closeModal('trip-create');
                 } catch (error) {
+                    this.resetCreateModal();
                     this.alert = true;
-                    this.message = 'Error al crear el viaje.';
+                    if(this.tripToUpdate && this.tripToUpdate.id ){
+                        this.message = 'Error al editar el viaje.';
+                    }else{
+                        this.message = 'Error al crear el viaje.';
+                    }
                     this.variantalert = 'error';
                 }
             },
@@ -263,10 +296,10 @@
                     this.loading = true;
                     const response = await axios.get("trip/routes/");
                     this.routes = response.data;
-
-                    console.log(response)
                 } catch (error) {
-                    alert("Error al obtener rutas");
+                    this.alert = true;
+                    this.message = 'Error al obtener rutas para creación de viaje.';
+                    this.variantalert = 'error';
                 } finally {
                     this.loading = false;
                 }
@@ -276,10 +309,10 @@
                     this.loading = true;
                     const response = await axios.get("trip/buses/");
                     this.buses = response.data;
-
-                    console.log(response)
                 } catch (error) {
-                    alert("Error al obtener buses");
+                    this.alert = true;
+                    this.message = 'Error al obtener buses para creación de viaje.';
+                    this.variantalert = 'error';
                 } finally {
                     this.loading = false;
                 }
@@ -294,6 +327,7 @@
                 }
             },
             closeModal(name) {
+                this.titleCreateUpdateTrip = 'Crear Viaje';
                 this.$bvModal.hide(name);
             }
         },
