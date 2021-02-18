@@ -6,6 +6,7 @@ import TripsList from "./components/trips/TripsList"
 import RoutesList from "./components/routes/RoutesList"
 import DriversList from "./components/drivers/DriversList"
 import BusesTabs from "./components/buses/BusesTabs";
+import TicketsReservation from "./components/tickets/TicketsReservation"
 
 import Login from "./components/users/Login"
 import Register from './components/users/Register'
@@ -47,6 +48,11 @@ const routes = [
         path:"/buses",
         name:"buses",
         component:BusesTabs
+    },
+    {
+        path:"/tickets",
+        name:"tickets",
+        component:TicketsReservation
     }
 ]
 

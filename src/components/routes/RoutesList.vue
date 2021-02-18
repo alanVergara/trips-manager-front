@@ -21,6 +21,10 @@
         >
             <!-- ACTIONS INSIDE ITEMS -->
             <template #cell(actions)="row">
+                <!-- SHOW DETAIL TRIP TICKETS BUTTON -->
+                <b-button size="sm" @click.prevent="ticketsModalRoute(row.item)" class="btn-danger mr-1">
+                    Reservar Ticket
+                </b-button>
                 <!-- EDIT BUTTON -->
                 <b-button size="sm" @click.prevent="editModalRoute(row.item)" class="btn-info mr-1">
                     Editar
@@ -29,14 +33,6 @@
                 <b-button size="sm" @click.prevent="deleteModalRoute(row.item)" class="btn-danger mr-1">
                     Eliminar
                 </b-button>
-            </template>
-            <!-- ROW VALUES -->
-            <template #row-details="row">
-                <b-card>
-                    <ul>
-                        <li v-for="(value, key) in row.item" :key="key">{{ key }}: {{ value }}</li>
-                    </ul>
-                </b-card>
             </template>
         </b-table>
         <!-- END TABLE -->
@@ -286,6 +282,10 @@
             closeModal(name) {
                 this.titleCreateUpdateRoute = 'Crear Ruta';
                 this.$bvModal.hide(name);
+            },
+            ticketsModalRoute(trip){
+                console.log(trip);
+
             }
         }
     }

@@ -31,14 +31,6 @@
                     Eliminar
                 </b-button>
             </template>
-            <!-- ROW VALUES -->
-            <template #row-details="row">
-                <b-card>
-                    <ul>
-                        <li v-for="(value, key) in row.item" :key="key">{{ key }}: {{ value }}</li>
-                    </ul>
-                </b-card>
-            </template>
         </b-table>
         <!-- END TABLE -->
 

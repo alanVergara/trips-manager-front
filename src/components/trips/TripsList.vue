@@ -25,13 +25,6 @@
                     Eliminar
                 </b-button>
             </template>
-            <template #row-details="row">
-                <b-card>
-                    <ul>
-                        <li v-for="(value, key) in row.item" :key="key">{{ key }}: {{ value }}</li>
-                    </ul>
-                </b-card>
-            </template>
         </b-table>
         <!-- END TABLE -->
 
@@ -82,6 +75,7 @@
             hide-footer
         >
             <b-form @submit.prevent="createTrip">
+                <!-- INPUT FIELD NAME -->
                 <b-form-group id="in-group-name" label="Nombre:" label-for="input-name">
                     <b-form-input
                         id="input-name"
@@ -90,7 +84,7 @@
                         required
                     ></b-form-input>
                 </b-form-group>
-
+                <!-- INPUT FIELD BEGIN AT -->
                 <b-row class="mx-1">
                     <b-form-group id="in-group-begin-at-date" label="Fecha Inicio:" label-for="input-begin-at-date">
                         <b-form-datepicker 
@@ -118,7 +112,7 @@
                         ></b-form-timepicker>
                     </b-form-group>
                 </b-row>
-
+                <!-- SELECT FIELD ROUTE -->
                 <b-form-group id="in-group-route" label="Ruta:" label-for="input-route">
                     <b-form-select
                         id="input-route"
@@ -129,10 +123,10 @@
                         required
                     ></b-form-select>
                 </b-form-group>
-
+                <!-- SELECT FIELD BUS -->
                 <b-form-group id="in-group-bus" label="Bus:" label-for="input-bus">
                     <b-form-select
-                        id="input- bus"
+                        id="input-bus"
                         v-model="form.bus"
                         :options="buses"
                         value-field="id"
@@ -140,7 +134,7 @@
                         required
                     ></b-form-select>
                 </b-form-group>
-
+                <!-- FORM ACTIONS BUTTONS -->
                 <b-button class="mr-2 float-right" type="submit" variant="primary">{{ tripToUpdate ? 'Editar viaje' : 'Crear viaje' }}</b-button>
                 <b-button class="mr-2 float-right" variant="danger" @click="closeModal('trip-create')">Cerrar</b-button>
             </b-form>
@@ -172,10 +166,15 @@
             const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
             const minDate = new Date(today)
             return {
+                loading: false,
+                alert: false,
+                variantalert: 'danger',
+                message: '',
+
                 trips: [],
                 routes: [],
                 buses: [],
-                loading: false,
+
                 fields: [
                     { key: 'name', label: 'Nombre'},
                     { key: 'begin_at', label: 'Horario Inicio'},
@@ -186,6 +185,7 @@
                 currentPage: 1,
                 perPage: 5,
                 pageOptions: [5, 10, 15],
+
                 form: {
                     name: '',
                     begin_at_date: '',
@@ -193,11 +193,9 @@
                     route: null,
                     bus: null
                 },
-                min: minDate,
-                alert: false,
-                variantalert: 'danger',
-                message: '',
+
                 titleCreateUpdateTrip:'Crear Viaje',
+                min: minDate,
                 tripToDelete: null,
                 tripToUpdate: null
             }
@@ -214,6 +212,7 @@
                     const response = await axios.get("trip/trips/");
                     this.totalRows = response.data.length
                     this.trips = response.data;
+                    console.log(response.data)
                 } catch (error) {
                     this.alert = true;
                     this.message = 'Error al cargar el listado de viajes.';

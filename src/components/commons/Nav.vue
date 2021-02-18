@@ -4,9 +4,12 @@
             <router-link to="/" class="navbar-brand">Home</router-link>
             <b-row>
                 <router-link to="/routes" class="nav-link">Rutas</router-link>
-                <router-link to="/trips" class="nav-link">Viajes</router-link>
-                <router-link to="/drivers" class="nav-link">Conductores</router-link>
                 <router-link to="/buses" class="nav-link">Buses</router-link>
+                <router-link to="/drivers" class="nav-link">Conductores</router-link>
+            </b-row>
+            <b-row class="ml-2">
+                <router-link to="/trips" class="nav-link">Viajes</router-link>
+                <router-link to="/tickets" class="nav-link">Tickets</router-link>
             </b-row>
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav ml-auto" v-if="!user">
@@ -31,16 +34,16 @@
 import { mapGetters } from "vuex";
 
 export default {
-name: "Nav",
-methods: {
-    logout() {
-    localStorage.removeItem("token");
-    this.$store.dispatch("user", null);
-    this.$router.push("/");
+    name: "Nav",
+    methods: {
+        logout() {
+            localStorage.removeItem("token");
+            this.$store.dispatch("user", null);
+            this.$router.push("/");
+        },
     },
-},
-computed: {
-    ...mapGetters(["user"]),
-},
+    computed: {
+        ...mapGetters(["user"]),
+    },
 };
 </script>
