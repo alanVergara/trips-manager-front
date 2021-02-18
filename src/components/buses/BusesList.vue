@@ -3,30 +3,31 @@
         <b-row>
             <!-- CREATION BUTTON -->
             <b-col>
-                <b-button class="btn-info float-right my-4" v-b-modal.route-create-update>Nueva ruta</b-button>
+                <b-button class="float-right my-4" variant="primary" v-b-modal.bus-create-update>Nuevo bus</b-button>
             </b-col>
         </b-row>
         <!-- MESSAGE -->
         <b-alert :show="alert" dismissible :variant="variantalert">{{message}}</b-alert>
         <!-- INIT TABLE -->
         <b-table
-            :items="routes"
+            :items="buses"
             :fields="fields"
             :current-page="currentPage"
             :per-page="perPage"
             stacked="md"
             show-empty
             small
+            class="mt-4"
             empty-text="Sin datos para mostrar"
         >
             <!-- ACTIONS INSIDE ITEMS -->
             <template #cell(actions)="row">
                 <!-- EDIT BUTTON -->
-                <b-button size="sm" @click.prevent="editModalRoute(row.item)" class="btn-info mr-1">
+                <b-button size="sm" @click.prevent="editModalBus(row.item)" class="btn-info mr-1">
                     Editar
                 </b-button>
                 <!-- DELETE BUTTON -->
-                <b-button size="sm" @click.prevent="deleteModalRoute(row.item)" class="btn-danger mr-1">
+                <b-button size="sm" @click.prevent="deleteModalBus(row.item)" class="btn-danger mr-1">
                     Eliminar
                 </b-button>
             </template>
@@ -80,59 +81,51 @@
 
         <!-- INIT MODAL CREATE/UPDATE -->
         <b-modal
-            id="route-create-update"
+            id="bus-create-update"
             ref="modal"
-            :title="titleCreateUpdateRoute"
+            :title="titleCreateUpdateBus"
             @show="resetCreateModal"
             @hidden="resetCreateModal"
             hide-footer
         >
-            <b-form @submit.prevent="createRoute">
-                <!-- INPUT FIELD NAME -->
-                <b-form-group id="in-group-name" label="Nombre:" label-for="input-name">
+            <b-form @submit.prevent="createBus">
+                <!-- INPUT FIELD NUM-PLATE -->
+                <b-form-group id="in-group-num-plate" label="Patente:" label-for="input-num-plate">
                     <b-form-input
-                        id="input-name"
-                        v-model="form.name"
-                        placeholder="Nombre Ruta"
+                        id="input-num-plate"
+                        v-model="form.num_plate"
+                        placeholder="Patente Bus"
                         required
                     ></b-form-input>
                 </b-form-group>
-                <!-- INPUT FIELD ORIGIN -->
-                <b-form-group id="in-group-origin" label="Origen:" label-for="input-origin">
-                    <b-form-input
-                        id="input-origin"
-                        v-model="form.origin"
-                        placeholder="Origen"
-                        required
-                    ></b-form-input>
-                </b-form-group>
-                <!-- INPUT FIELD DESTINATION -->
-                <b-form-group id="in-group-destination" label="Destino:" label-for="input-destination">
-                    <b-form-input
-                        id="input-destination"
-                        v-model="form.destination"
-                        placeholder="Destino"
-                        required
-                    ></b-form-input>
+                <!-- INPUT FIELD DRIVER -->
+                <b-form-group id="in-group-driver" label="Conductor:" label-for="input-driver">
+                    <b-form-select
+                        id="input-driver"
+                        v-model="form.driver"
+                        :options="drivers"
+                        value-field="id"
+                        text-field="username"
+                    ></b-form-select>
                 </b-form-group>
 
                 <!-- FORM ACTIONS BUTTONS -->
-                <b-button class="mr-2 float-right" type="submit" variant="primary">{{ routeToUpdate ? 'Editar ruta' : 'Crear ruta' }}</b-button>
-                <b-button class="mr-2 float-right" variant="danger" @click="closeModal('route-create-update')">Cerrar</b-button>
+                <b-button class="mr-2 float-right" type="submit" variant="primary">{{ busToUpdate ? 'Editar bus' : 'Crear bus' }}</b-button>
+                <b-button class="mr-2 float-right" variant="danger" @click="closeModal('bus-create-update')">Cerrar</b-button>
             </b-form>
         </b-modal>
         <!-- END MODAL CREATE/UPDATE -->
 
         <!-- INIT MODAL DELETE -->
         <b-modal
-            id="route-delete"
+            id="bus-delete"
             ref="modal"
-            title="Borrar Ruta"
+            title="Borrar Bus"
             ok-title="Borrar"
             header-close-label="Cerrar"
-            @ok="deleteRoute"
+            @ok="deleteBus"
         >
-            <p>Esta seguro que desea borrar la ruta: {{routeToDelete ? routeToDelete.name : ''}}</p>
+            <p>Esta seguro que desea borrar el bus: {{busToDelete ? busToDelete.num_plate : ''}}</p>
         </b-modal>
         <!-- END MODAL DELETE -->
     </b-container>
@@ -142,20 +135,20 @@
     import axios from "axios";
 
     export default {
-        name: 'RoutesList',
+        name: 'BusesList',
         data() {
             return {
                 loading: false,
                 alert: false,
                 variantalert: 'danger',
                 message: '',
-                titleCreateUpdateRoute:'Crear Ruta',
+                titleCreateUpdateBus:'Crear Bus',
 
-                routes: [],
+                buses: [],
+                drivers: [],
                 fields: [
-                    { key: 'name', label: 'Nombre'},
-                    { key: 'origin', label: 'Origen'},
-                    { key: 'destination', label: 'Destino' },
+                    { key: 'num_plate', label: 'Patente'},
+                    { key: 'driver', label: 'Conductor Asignado'},
                     { key: 'actions', label: ''}
                 ],
                 totalRows: 0,
@@ -164,97 +157,110 @@
                 pageOptions: [5, 10, 15],
 
                 form: {
-                    name: '',
-                    origin: '',
-                    destination: ''
+                    num_plate: '',
+                    driver: null
                 },
 
-                routeToDelete: null,
-                routeToUpdate: null
+                busToDelete: null,
+                busToUpdate: null
             }
         },
         created() {
-            this.getRoutes();
+            this.getBuses();
+            this.getDrivers();
         },
         methods: {
-            async getRoutes(){
+            async getBuses(){
                 try {
                     this.loading = true;
-                    const response = await axios.get("trip/routes/");
+                    const response = await axios.get("trip/buses/");
                     this.totalRows = response.data.length
-                    this.routes = response.data;
+                    this.buses = response.data;
+                    console.log(response.data);
                 } catch (error) {
                     this.alert = true;
-                    this.message = 'Error al cargar el listado de rutas.';
+                    this.message = 'Error al cargar el listado de buses.';
                     this.variantalert = 'danger';
                 } finally {
                     this.loading = false;
                 }
             },
-            editModalRoute(route){
-                this.$bvModal.show('route-create-update');
-                this.routeToUpdate = route;
-                this.titleCreateUpdateRoute = 'Editar Ruta';
+            editModalBus(bus){
+                this.$bvModal.show('bus-create-update');
+                this.busToUpdate = bus;
+                this.titleCreateUpdateBus = 'Editar Bus';
 
                 this.form = {
-                    name: route.name,
-                    origin: route.origin,
-                    destination: route.destination
+                    num_plate: bus.num_plate,
+                    driver: bus.driver
                 }
             },
-            deleteModalRoute(route){
-                this.$bvModal.show('route-delete');
-                this.routeToDelete = route;
+            deleteModalBus(bus){
+                this.$bvModal.show('bus-delete');
+                this.busToDelete = bus;
             },
-            async deleteRoute(){
+            async deleteBus(){
                 try {
                     this.loading = true;
-                    await axios.delete("trip/routes/"+this.routeToDelete.id);
+                    await axios.delete("trip/buses/"+this.busToDelete.id);
                     this.alert = true;
-                    this.message = 'Ruta eliminada correctamente.';
+                    this.message = 'Bus eliminado correctamente.';
                     this.variantalert = 'success';
 
-                    this.getRoutes();
-                    this.closeModal('route-delete');
+                    this.getBuses();
+                    this.closeModal('bus-delete');
                 } catch (error) {
                     this.alert = true;
-                    this.message = 'Error al borrar la ruta.';
+                    this.message = 'Error al borrar el bus.';
                     this.variantalert = 'danger';
                 } finally {
                     this.loading = false;
                 }
             },
-            async createRoute(){
+            async createBus(){
                 try {
                     this.loading = true;
                     const data = {
-                        'name': this.form.name, 
-                        'origin': this.form.origin,
-                        'destination': this.form.destination
+                        'num_plate': this.form.num_plate, 
+                        'driver': this.form.driver
                     }
 
-                    if(this.routeToUpdate && this.routeToUpdate.id ){
-                        await axios.put("trip/routes/"+this.routeToUpdate.id+"/", data);
-                        this.message = 'Ruta editada correctamente.';
+                    if(this.busToUpdate && this.busToUpdate.id ){
+                        await axios.put("trip/buses/"+this.busToUpdate.id+"/", data);
+                        this.message = 'Bus editado correctamente.';
                     }else{
-                        await axios.post("trip/routes/", data);
-                        this.message = 'Ruta creada correctamente.';
+                        await axios.post("trip/buses/", data);
+                        this.message = 'Bus creado correctamente.';
                     }
 
                     this.alert = true;
                     this.variantalert = 'success';
                     
+                    this.busToUpdate = null;
                     this.resetCreateModal();
-                    this.getRoutes();
-                    this.closeModal('route-create-update');
+                    this.getBuses();
+                    this.closeModal('bus-create-update');
                 } catch (error) {
                     this.resetCreateModal();
                     this.alert = true;
-                    if(this.routeToUpdate && this.routeToUpdate.id ){
-                        this.message = 'Error al editar la ruta.';
+                    if(this.busToUpdate && this.busToUpdate.id ){
+                        this.message = 'Error al editar el bus.';
                     }else{
-                        this.message = 'Error al crear la ruta.';
+                        this.message = 'Error al crear el bus.';
                     }
+                    this.variantalert = 'danger';
+                } finally {
+                    this.loading = false;
+                }
+            },
+            async getDrivers(){
+                try {
+                    this.loading = true;
+                    const response = await axios.get("user/drivers/");
+                    this.drivers = response.data;
+                } catch (error) {
+                    this.alert = true;
+                    this.message = 'Error al obtener conductores para creación del bus.';
                     this.variantalert = 'danger';
                 } finally {
                     this.loading = false;
@@ -262,13 +268,12 @@
             },
             resetCreateModal(){
                 this.form = {
-                    name: '',
-                    origin: '',
-                    destination: ''
+                    num_plate: '',
+                    driver: null
                 }
             },
             closeModal(name) {
-                this.titleCreateUpdateRoute = 'Crear Ruta';
+                this.titleCreateUpdateBus = 'Crear Bus';
                 this.$bvModal.hide(name);
             }
         }

@@ -15,6 +15,7 @@
             stacked="md"
             show-empty
             small
+            empty-text="Sin datos para mostrar"
         >
             <template #cell(actions)="row">
                 <b-button size="sm" @click.prevent="editModalTrip(row.item)" class="btn-info mr-1">
@@ -181,7 +182,7 @@
                     { key: 'route', label: 'Id Ruta' },
                     { key: 'actions', label: ''}
                 ],
-                totalRows: 100,
+                totalRows: 0,
                 currentPage: 1,
                 perPage: 5,
                 pageOptions: [5, 10, 15],
@@ -211,6 +212,7 @@
                 try {
                     this.loading = true;
                     const response = await axios.get("trip/trips/");
+                    this.totalRows = response.data.length
                     this.trips = response.data;
                 } catch (error) {
                     this.alert = true;
