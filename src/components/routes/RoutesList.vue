@@ -155,7 +155,8 @@
                 fields: [
                     { key: 'name', label: 'Nombre'},
                     { key: 'origin', label: 'Origen'},
-                    { key: 'destination', label: 'Destino' },
+                    { key: 'destination', label: 'Destino'},
+                    { key: 'average', label: 'Promedio Pasajeros'},
                     { key: 'actions', label: ''}
                 ],
                 totalRows: 0,
@@ -174,13 +175,28 @@
             }
         },
         created() {
-            this.getRoutes();
+            //this.getRoutes();
+            this.getRoutesWithAverage();
         },
         methods: {
             async getRoutes(){
                 try {
                     this.loading = true;
                     const response = await axios.get("trip/routes/");
+                    this.totalRows = response.data.length
+                    this.routes = response.data;
+                } catch (error) {
+                    this.alert = true;
+                    this.message = 'Error al cargar el listado de rutas.';
+                    this.variantalert = 'danger';
+                } finally {
+                    this.loading = false;
+                }
+            },
+            async getRoutesWithAverage(){
+                try {
+                    this.loading = true;
+                    const response = await axios.get("trip/routes/average_passengers/");
                     this.totalRows = response.data.length
                     this.routes = response.data;
                 } catch (error) {

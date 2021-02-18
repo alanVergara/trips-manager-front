@@ -176,7 +176,6 @@
                     const response = await axios.get("trip/buses/");
                     this.totalRows = response.data.length
                     this.buses = response.data;
-                    console.log(response.data);
                 } catch (error) {
                     this.alert = true;
                     this.message = 'Error al cargar el listado de buses.';

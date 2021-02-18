@@ -5,7 +5,7 @@
             <b-row>
                 <router-link to="/routes" class="nav-link">Rutas</router-link>
                 <router-link to="/trips" class="nav-link">Viajes</router-link>
-                <router-link to="/drivers" class="nav-link">Choferes</router-link>
+                <router-link to="/drivers" class="nav-link">Conductores</router-link>
                 <router-link to="/buses" class="nav-link">Buses</router-link>
             </b-row>
             <div class="collapse navbar-collapse">
