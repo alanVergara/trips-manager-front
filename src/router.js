@@ -1,7 +1,6 @@
 import Vue from "vue"
 import VueRouter from "vue-router"
 
-import Main from "./components/trips/Main"
 import TripsList from "./components/trips/TripsList"
 import RoutesList from "./components/routes/RoutesList"
 import DriversList from "./components/drivers/DriversList"
@@ -14,11 +13,6 @@ import Register from './components/users/Register'
 Vue.use(VueRouter);
 
 const routes = [
-    {
-        path:"/",
-        name:"home",
-        component:Main
-    },
     {
         path:"/login",
         name:"login",
@@ -35,7 +29,7 @@ const routes = [
         component:DriversList
     },
     {
-        path:"/trips",
+        path:"/",
         name:"trips",
         component:TripsList
     },
@@ -52,7 +46,8 @@ const routes = [
     {
         path:"/tickets",
         name:"tickets",
-        component:TicketsReservation
+        component:TicketsReservation,
+        props: true
     }
 ]
 

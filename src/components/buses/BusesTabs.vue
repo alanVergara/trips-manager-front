@@ -1,5 +1,6 @@
 <template>
-    <div>
+    <b-container>
+        <h3 class="my-4">Buses</h3>
         <b-card no-body>
             <b-tabs pills card>
                 <b-tab title="Listado de buses" active>
@@ -14,7 +15,7 @@
                 </b-tab>
             </b-tabs>
         </b-card>
-    </div>
+    </b-container>
 </template>
 
 <script>

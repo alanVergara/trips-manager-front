@@ -2,8 +2,9 @@
     <b-container>
         <b-row>
             <!-- CREATION BUTTON -->
+            <h3 class="my-4">Conductores</h3>
             <b-col>
-                <b-button class="btn-info float-right my-4" v-b-modal.driver-create>Nuevo conductor</b-button>
+                <b-button class="float-right my-4" variant="primary" v-b-modal.driver-create>Nuevo conductor</b-button>
             </b-col>
         </b-row>
         <!-- MESSAGE -->

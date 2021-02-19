@@ -1,10 +1,12 @@
 <template>
     <b-container>
         <b-row>
+            <h3 class="my-4">Listado de viajes</h3>
             <b-col>
-                <b-button class="btn-info float-right my-4" v-b-modal.trip-create>Nuevo viaje</b-button>
+                <b-button v-if="user && user.user_type == 1" class="float-right my-4" variant="primary" v-b-modal.trip-create>Nuevo viaje</b-button>
             </b-col>
         </b-row>
+        <h3 v-if="!user" class="my-4">Para comprar un ticket debes iniciar sesión</h3>
         <b-alert :show="alert" dismissible :variant="variantalert">{{message}}</b-alert>
         <!-- INIT TABLE -->
         <b-table
@@ -16,12 +18,16 @@
             show-empty
             small
             empty-text="Sin datos para mostrar"
+            class="my-4"
         >
             <template #cell(actions)="row">
-                <b-button size="sm" @click.prevent="editModalTrip(row.item)" class="btn-info mr-1">
+                <b-button v-if="user && user.user_type == 2" size="sm" @click.prevent="reserveTicket(row.item)" variant="primary" class="mr-1">
+                    Reservar ticket
+                </b-button>
+                <b-button v-if="user && user.user_type == 1" size="sm" @click.prevent="editModalTrip(row.item)" class="btn-info mr-1">
                     Editar
                 </b-button>
-                <b-button size="sm" @click.prevent="deleteModalTrip(row.item)" class="btn-danger mr-1">
+                <b-button v-if="user && user.user_type == 1" size="sm" @click.prevent="deleteModalTrip(row.item)" class="btn-danger mr-1">
                     Eliminar
                 </b-button>
             </template>
@@ -158,6 +164,7 @@
 
 <script>
     import axios from "axios";
+    import { mapGetters } from "vuex";
 
     export default {
         name: 'TripsList',
@@ -202,8 +209,10 @@
         },
         created() {
             this.getTrips();
-            this.getRoutes();
-            this.getBuses();
+            if(this.user && this.user.user_type == 1){
+                this.getRoutes();
+                this.getBuses();
+            }
         },
         methods: {
             async getTrips(){
@@ -212,7 +221,6 @@
                     const response = await axios.get("trip/trips/");
                     this.totalRows = response.data.length
                     this.trips = response.data;
-                    console.log(response.data)
                 } catch (error) {
                     this.alert = true;
                     this.message = 'Error al cargar el listado de viajes.';
@@ -330,6 +338,9 @@
             closeModal(name) {
                 this.titleCreateUpdateTrip = 'Crear Viaje';
                 this.$bvModal.hide(name);
+            },
+            reserveTicket(item){
+                this.$router.push({name:'tickets', params: {tripRedirect: item}}); 
             }
         },
         computed: {
@@ -338,7 +349,8 @@
             },
             validateTime(){
                 return this.form.begin_at_time !== '';
-            }
+            },
+            ...mapGetters(["user"])
         }
     }
 </script>

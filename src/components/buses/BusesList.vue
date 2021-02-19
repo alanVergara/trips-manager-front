@@ -2,6 +2,7 @@
     <b-container>
         <b-row>
             <!-- CREATION BUTTON -->
+            <h3 class="my-4">Listado Buses</h3>
             <b-col>
                 <b-button class="float-right my-4" variant="primary" v-b-modal.bus-create-update>Nuevo bus</b-button>
             </b-col>

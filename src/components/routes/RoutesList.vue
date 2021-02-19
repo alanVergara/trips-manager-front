@@ -2,8 +2,9 @@
     <b-container>
         <b-row>
             <!-- CREATION BUTTON -->
+            <h3 class="my-4">Listado de rutas</h3>
             <b-col>
-                <b-button class="btn-info float-right my-4" v-b-modal.route-create-update>Nueva ruta</b-button>
+                <b-button class="float-right my-4" variant="primary" v-b-modal.route-create-update>Nueva ruta</b-button>
             </b-col>
         </b-row>
         <!-- MESSAGE -->
@@ -21,10 +22,6 @@
         >
             <!-- ACTIONS INSIDE ITEMS -->
             <template #cell(actions)="row">
-                <!-- SHOW DETAIL TRIP TICKETS BUTTON -->
-                <b-button size="sm" @click.prevent="ticketsModalRoute(row.item)" class="btn-danger mr-1">
-                    Reservar Ticket
-                </b-button>
                 <!-- EDIT BUTTON -->
                 <b-button size="sm" @click.prevent="editModalRoute(row.item)" class="btn-info mr-1">
                     Editar
@@ -282,10 +279,6 @@
             closeModal(name) {
                 this.titleCreateUpdateRoute = 'Crear Ruta';
                 this.$bvModal.hide(name);
-            },
-            ticketsModalRoute(trip){
-                console.log(trip);
-
             }
         }
     }

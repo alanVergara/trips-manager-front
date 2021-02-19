@@ -1,5 +1,6 @@
 <template>
     <b-container>
+        <h3 class="my-4">Reserva de tickets</h3>
         <!-- MESSAGE -->
         <b-alert :show="alert" dismissible :variant="variantalert">{{message}}</b-alert>
         <!-- INIT FILTERS FORM -->
@@ -99,9 +100,13 @@
                 trips: [],
                 tripFilter: null,
                 tickets: [],
-                showTickets: false
+                showTickets: false,
+                valueInProp: true
             }
         },
+        props:[
+            'tripRedirect'
+        ],
         created() {
             this.filterTrip();
             this.completeTicketsInformation();
@@ -121,8 +126,12 @@
                 }
             },
             async completeTicketsInformation(){
-                 this.showTickets = false;
-                
+                this.showTickets = false;
+                if(this.tripRedirect && this.tripRedirect.tickets_trip && this.valueInProp){
+                    this.valueInProp = false;
+                    this.tripFilter = this.tripRedirect.tickets_trip;
+                }
+
                 if(this.tripFilter && this.tripFilter.length > 0){
                     for(const ticket in this.tripFilter){
                         let detail = await this.getTicketDetail(this.tripFilter[ticket])
