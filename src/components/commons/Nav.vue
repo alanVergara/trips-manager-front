@@ -103,6 +103,9 @@
                 this.$bvModal.show('user-delete');
                 this.userToDelete = this.user;
             },
+            /**
+             * Function for delete user
+             */
             async deleteUser(){
                 try {
                     this.loading = true;

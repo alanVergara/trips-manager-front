@@ -172,6 +172,9 @@
             this.getRoutesWithAverage();
         },
         methods: {
+            /**
+             * Get routes for list
+             */
             async getRoutes(){
                 try {
                     this.loading = true;
@@ -186,6 +189,9 @@
                     this.loading = false;
                 }
             },
+            /**
+             * Get routes for list with average of usage
+             */
             async getRoutesWithAverage(){
                 try {
                     this.loading = true;
@@ -200,6 +206,9 @@
                     this.loading = false;
                 }
             },
+            /**
+             * Open modal for edit route
+             */
             editModalRoute(route){
                 this.$bvModal.show('route-create-update');
                 this.routeToUpdate = route;
@@ -211,10 +220,16 @@
                     destination: route.destination
                 }
             },
+            /**
+             * Open modal for delete route
+             */
             deleteModalRoute(route){
                 this.$bvModal.show('route-delete');
                 this.routeToDelete = route;
             },
+            /**
+             * Function for delete route
+             */
             async deleteRoute(){
                 try {
                     this.loading = true;
@@ -233,6 +248,9 @@
                     this.loading = false;
                 }
             },
+            /**
+             * Function for create route
+             */
             async createRoute(){
                 try {
                     this.loading = true;

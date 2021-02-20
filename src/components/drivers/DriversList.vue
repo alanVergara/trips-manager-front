@@ -172,6 +172,9 @@
             this.getDrivers();
         },
         methods: {
+            /**
+             * Get drivers for list
+             */
             async getDrivers(){
                 this.alert = false;
                 try {
@@ -187,6 +190,9 @@
                     this.loading = false;
                 }
             },
+            /**
+             * Open modal for delete driver
+             */
             deleteModalDriver(driver){
                 this.$bvModal.show('driver-delete');
                 this.driverToDelete = driver;
@@ -210,6 +216,9 @@
                     this.loading = false;
                 }
             },
+            /**
+             * Function for create driver
+             */
             async createDriver(){
                 this.alert = false;
                 try {

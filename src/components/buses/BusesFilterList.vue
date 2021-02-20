@@ -130,6 +130,9 @@
             this.getRoutes();
         },
         methods: {
+            /**
+             * Filter percentage usage by percentage and route
+             */
             async filterBus(){
                 const route = this.formfilter.route;
                 const percentage = this.formfilter.percentage
@@ -147,6 +150,9 @@
                     this.loading = false;
                 }
             },
+            /**
+             * Get Routes for list
+             */
             async getRoutes(){
                 try {
                     this.loading = true;
@@ -160,6 +166,9 @@
                     this.loading = false;
                 }
             },
+            /**
+             * Validate percentage input
+             */
             validatePercentage(){
                 if(this.percentage < 0 || this.percentage > 100 ){
                     this.percentage = 0;

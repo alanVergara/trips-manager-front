@@ -46,6 +46,9 @@
             this.setDefaultValues();
         },
         methods : {
+            /**
+             * Register new user
+             */
             async registerUser(){
                 try {
                     if(!this.user){
@@ -64,6 +67,9 @@
                 }
 
             },
+            /**
+             * Update data from user
+             */
             async updateUser(){
                 try {
                     const data = {

@@ -112,6 +112,9 @@
             this.completeTicketsInformation();
         },
         methods:{
+            /**
+             * Get trips list for select input
+             */
             async filterTrip(){
                 try {
                     this.loading = true;
@@ -125,6 +128,9 @@
                     this.loading = false;
                 }
             },
+            /**
+             * Get list of tickets in trip
+             */
             async completeTicketsInformation(){
                 this.showTickets = false;
                 if(this.tripRedirect && this.tripRedirect.tickets_trip && this.valueInProp){
@@ -142,6 +148,9 @@
                     this.showTickets = false;
                 }
             },
+            /**
+             * Get detail of information by ticket
+             */
             async getTicketDetail(ticket_id){
                 try {
                     this.loading = true;
@@ -155,6 +164,9 @@
                     this.loading = false;
                 }
             },
+            /**
+             * Reserve ticket by passenger
+             */
             async reserveTicket(position){
                 try {
                     this.loading = true;

@@ -215,6 +215,9 @@
             }
         },
         methods: {
+            /**
+             * Get trips for list
+             */
             async getTrips(){
                 try {
                     this.loading = true;
@@ -229,6 +232,9 @@
                     this.loading = false;
                 }
             },
+            /**
+             * Open modal for edit trip
+             */
             editModalTrip(trip){
                 this.$bvModal.show('trip-create');
                 this.tripToUpdate = trip;
@@ -243,10 +249,16 @@
                     bus: trip.bus
                 }
             },
+            /**
+             * Open modal for delete trip
+             */
             deleteModalTrip(trip){
                 this.$bvModal.show('trip-delete');
                 this.tripToDelete = trip;
             },
+            /**
+             * Function for delete trip
+             */
             async deleteTrip(){
                 try {
                     this.loading = true;
@@ -263,6 +275,9 @@
                     this.variantalert = 'danger';
                 }
             },
+            /**
+             * Function for create trip
+             */
             async createTrip(){
                 try {
                     if(!this.validateDate || !this.validateTime){
@@ -300,6 +315,9 @@
                     this.variantalert = 'danger';
                 }
             },
+            /**
+             * Get routes for input
+             */
             async getRoutes(){
                 try {
                     this.loading = true;
@@ -313,6 +331,9 @@
                     this.loading = false;
                 }
             },
+            /**
+             * Get buses for input
+             */
             async getBuses(){
                 try {
                     this.loading = true;

@@ -163,6 +163,9 @@
             this.getDrivers();
         },
         methods: {
+            /**
+             * Get buses for list
+             */
             async getBuses(){
                 try {
                     this.loading = true;
@@ -177,6 +180,9 @@
                     this.loading = false;
                 }
             },
+            /**
+             * Open modal for edit bus
+             */
             editModalBus(bus){
                 this.$bvModal.show('bus-create-update');
                 this.busToUpdate = bus;
@@ -187,10 +193,16 @@
                     driver: bus.driver
                 }
             },
+            /**
+             * Open modal for delete bus
+             */
             deleteModalBus(bus){
                 this.$bvModal.show('bus-delete');
                 this.busToDelete = bus;
             },
+            /**
+             * Function for delete bus
+             */
             async deleteBus(){
                 try {
                     this.loading = true;
@@ -209,6 +221,9 @@
                     this.loading = false;
                 }
             },
+            /**
+             * Create a bus
+             */
             async createBus(){
                 try {
                     this.loading = true;
@@ -245,6 +260,9 @@
                     this.loading = false;
                 }
             },
+            /**
+             * Get drivers for select
+             */
             async getDrivers(){
                 try {
                     this.loading = true;
