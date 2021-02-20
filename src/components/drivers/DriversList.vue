@@ -130,7 +130,7 @@
             header-close-label="Cerrar"
             @ok="deleteDriver"
         >
-            <p>Esta seguro que desea borrar el conductor: {{driverToDelete ? driverToDelete.name : ''}}</p>
+            <p>Esta seguro que desea borrar el conductor: {{driverToDelete ? driverToDelete.username : ''}}</p>
         </b-modal>
         <!-- END MODAL DELETE -->
     </b-container>
@@ -243,9 +243,11 @@
                     this.alert = true;
                     this.variantalert = 'danger';
 
-                    if(error.response && error.response.data && error.response.data.non_field_errors
-                        && error.response.data.non_field_errors[0]){
-                        this.message = error.response.data.non_field_errors[0];
+                    if(error && error.response && error.response.data){
+                        const data = error.response.data;
+                        let errors = Object.keys(data).map( key => data[key][0] ? data[key][0] : data[key] )
+                        errors = errors.join(", ");
+                        this.message = errors;
                     }else{
                         this.message = 'Error al crear el conductor.';
                     }

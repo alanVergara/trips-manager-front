@@ -238,7 +238,7 @@
                     this.message = 'Ruta eliminada correctamente.';
                     this.variantalert = 'success';
 
-                    this.getRoutes();
+                    this.getRoutesWithAverage();
                     this.closeModal('route-delete');
                 } catch (error) {
                     this.alert = true;
@@ -272,7 +272,7 @@
                     this.variantalert = 'success';
                     
                     this.resetCreateModal();
-                    this.getRoutes();
+                    this.getRoutesWithAverage();
                     this.closeModal('route-create-update');
                 } catch (error) {
                     this.resetCreateModal();

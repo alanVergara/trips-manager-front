@@ -62,7 +62,14 @@
                     }
                 } catch (error) {
                     this.alert = true;
-                    this.message = 'Error al realizar el registro.';
+                    if(error && error.response && error.response.data){
+                        const data = error.response.data;
+                        let errors = Object.keys(data).map( key => data[key][0] ? data[key][0] : data[key] )
+                        errors = errors.join(", ");
+                        this.message = errors;
+                    }else{
+                        this.message = 'Error al realizar el registro.';
+                    }
                     this.variantalert = 'danger';
                 }
 
@@ -89,7 +96,14 @@
                     this.variantalert = 'success';
                 } catch (error) {
                     this.alert = true;
-                    this.message = 'Error al realizar la actualización de datos.';
+                    if(error && error.response && error.response.data){
+                        const data = error.response.data;
+                        let errors = Object.keys(data).map( key => data[key][0] ? data[key][0] : data[key] )
+                        errors = errors.join(", ");
+                        this.message = errors;
+                    }else{
+                        this.message = 'Error al realizar la actualización de datos.';
+                    }
                     this.variantalert = 'danger';
                 }
             },
